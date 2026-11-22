@@ -1,65 +1,86 @@
 # NumPy MNIST From Scratch
 
-**基于 NumPy 从零实现神经网络训练流程，并用于 MNIST 手写数字识别。**
+**基于 NumPy 手写神经网络训练框架，完成 MNIST 手写数字识别。**
 
-这是一个课程设计项目。我们将自行实现前馈网络的层、反向传播、损失函数、优化器和训练循环，以可配置的多层感知机（MLP）完成 0～9 数字分类；另用单层感知机完成数字 0/1 二分类实验。
+本项目实现可配置的多层感知机（MLP），包括网络层、反向传播、损失函数、优化器、训练循环、模型保存与独立预测。另实现单层感知机，用于数字 0/1 二分类实验。
 
-## 计划实现的功能
+NumPy 用于数组和线性代数计算，Matplotlib 用于绘图。神经网络训练代码由小组自行实现，不使用现成训练框架或自动求导工具。
 
-- **可配置 MLP**：通过隐藏层宽度列表设置层数和每层神经元数量。
-- **手写训练流程**：Linear、ReLU、反向传播、批量训练与模型预测。
-- **算法对比**：交叉熵与 MSE，SGD 与 Adam。
-- **结果评估**：Accuracy、Macro-F1、混淆矩阵及训练曲线。
-- **模型保存与加载**：将训练后的结构和参数保存为 `.npz`，在独立程序中加载预测。
-- **独立感知机实验**：使用感知机学习规则识别数字 0/1。
+## 项目功能
 
-NumPy 负责数组与线性代数计算，Matplotlib 用于绘图。网络训练代码由小组实现，不引入现成神经网络训练框架或自动求导工具。
+- 自定义隐藏层层数与神经元数量
+- 手写 Linear、ReLU 及反向传播
+- 交叉熵与 MSE 损失函数
+- SGD 与 Adam 优化器
+- Accuracy、Macro-F1 等评估指标
+- 保存 `.npz` 模型，并在独立程序中加载预测
+- 单层感知机数字 0/1 分类实验
+- 不同损失函数和优化器的对比实验
 
-## 项目状态
-
-项目正在开发中。当前仓库提供了公共接口约定与基础容器，训练和预测入口将在后续模块集成后开放。
+## 当前进度
 
 | 模块 | 状态 |
 | --- | --- |
-| 接口约定、`Parameter` / `Layer` / `Sequential` | 已完成 |
-| MNIST 数据读取、指标、0/1 感知机 | 开发中 |
-| Linear / ReLU 与手写反向传播 | 开发中 |
-| 损失函数与优化器 | 开发中 |
-| 训练、实验、预测与模型保存 | 开发中 |
+| 公共接口、网络层与反向传播 | 已完成，数值梯度检查通过 |
+| MNIST 数据读取与评估指标 | 已完成 |
+| 交叉熵、MSE、SGD、Adam | 已完成，独立检查通过 |
+| MLP 训练、模型保存与加载预测 | 已用真实 MNIST 验收 |
+| 感知机独立演示与四组对比实验结果 | 正在整理 |
 
-> 状态随代码合并更新；实验图表和准确率将在实际运行后补充。
+## 安装与准备数据
 
-## 训练流程
-
-```text
-MNIST 图片与标签
-       ↓
-读取、归一化与批处理
-       ↓
-可配置 MLP 前向计算 → 十类原始分数 → 预测数字
-       ↓
-损失函数 → 手写反向传播 → SGD / Adam 更新参数
-       ↓
-验证与指标统计 → 保存模型 → 加载模型独立预测
-```
-
-## 获取代码并安装依赖
-
-在 Windows PowerShell 中，于项目根目录执行：
+以下命令在项目根目录的 **Windows PowerShell** 中运行：
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -c "from src.core import Parameter, Sequential; print('core import OK')"
+.\.venv\Scripts\python.exe download_mnist.py --data-dir data
 ```
 
-以上最后一行只检查当前已完成的公共模块是否能导入。完整训练和预测命令会在相应代码合并、验证后更新。
+MNIST 数据将放在本地 `data/` 目录。
 
-## 文档与目录
+## 检查基础模块
 
-- [接口约定](INTERFACES.md)：统一数据形状、函数签名、参数和梯度规则。
-- [开发与复现说明](开发与复现说明.md)：成员分工、计划目录、环境安装、目标运行命令与验收流程。
-- `src/core.py`：参数、网络层接口和顺序容器。
-- `requirements.txt`：当前第三方依赖。
+```powershell
+.\.venv\Scripts\python.exe -m src.check_layers
+.\.venv\Scripts\python.exe -m checks.check_d
+```
 
-MNIST 原始数据放在本地 `data/` 目录；数据获取与准备方法将在数据模块完成后补齐。项目的技术说明、实验结果及 AI 工具使用情况会随课程设计材料一并整理。
+两项检查分别验证网络层的前向与反向梯度，以及损失函数和优化器。
+
+## 训练模型
+
+以下配置使用完整训练集训练 5 轮，并将模型保存到 `outputs/model_full.npz`：
+
+```powershell
+.\.venv\Scripts\python.exe -m src.train --data-dir data --output outputs/model_full.npz --epochs 5 --batch-size 64 --hidden 128 64 --optimizer adam --loss ce --lr 0.001
+```
+
+训练时观察每轮的 `train_loss`、`val_loss`、`val_acc` 和 `val_f1`。同目录下的 `model_full.json` 记录训练配置、逐轮指标和测试结果。
+
+## 加载模型并预测
+
+训练成功后，使用保存的模型评估完整测试集，并显示前 10 张图片的预测：
+
+```powershell
+.\.venv\Scripts\python.exe -m src.predict --data-dir data --model outputs/model_full.npz --split test --show 10
+```
+
+正式训练和完整测试均**不使用 `--limit`**。需要快速检查代码时，可以在训练命令中临时加入 `--limit 64`；该结果不作为正式实验结论。
+
+## 已验证的基线结果
+
+| 项目 | 结果 |
+| --- | ---: |
+| 数据划分 | 训练 54,000／验证 6,000／测试 10,000 |
+| 网络结构 | 784 → 128 → 64 → 10 |
+| 训练设置 | 交叉熵、Adam、学习率 0.001、批大小 64、5 轮 |
+| 测试集 Accuracy | **97.31%** |
+| 测试集 Macro-F1 | **97.29%** |
+
+以上为一次真实 MNIST 运行结果。重新加载保存的模型后，得到相同的测试集指标。优化器与损失函数的完整对比结果将在实验材料中整理。
+
+## 项目文档
+
+- [接口约定](INTERFACES.md)：数据形状、模块函数及梯度规则
+- [开发与复现说明](开发与复现说明.md)：成员分工、项目流程与交付安排
