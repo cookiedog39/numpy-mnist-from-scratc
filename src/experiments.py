@@ -9,10 +9,10 @@ from pathlib import Path
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt  # noqa: E402
+import matplotlib.pyplot as plt
 
-from .model import build_mlp  # noqa: E402
-from .train import evaluate, make_loss, make_optimizer, train  # noqa: E402
+from .model import build_mlp
+from .train import evaluate, make_loss, make_optimizer, train
 
 try:
     from .data import load_mnist

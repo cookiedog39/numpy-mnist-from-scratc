@@ -29,6 +29,7 @@ def load_model(path) -> Sequential:
         sizes = tuple(int(size) for size in data["layer_sizes"])
         model = build_mlp(sizes[1:-1], input_dim=sizes[0], num_classes=sizes[-1])
         params = model.parameters()
+        # 按编号数值排序，避免 p10 排在 p2 前面。
         keys = sorted((key for key in data.files if key.startswith("p")), key=lambda key: int(key[1:]))
         if len(keys) != len(params):
             raise ValueError(f"参数个数不一致：文件 {len(keys)}，模型 {len(params)}")
