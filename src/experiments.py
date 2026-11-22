@@ -14,10 +14,7 @@ import matplotlib.pyplot as plt
 from .model import build_mlp
 from .train import evaluate, make_loss, make_optimizer, train
 
-try:
-    from .data import load_mnist
-except ImportError:
-    from data import load_mnist
+from .data import load_mnist
 
 
 COMBINATIONS = [

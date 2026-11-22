@@ -8,12 +8,8 @@ import numpy as np
 
 from .checkpoint import load_model
 
-try:
-    from .data import load_mnist
-    from .metrics import accuracy, macro_f1
-except ImportError:
-    from data import load_mnist
-    from metrics import accuracy, macro_f1
+from .data import load_mnist
+from .metrics import accuracy, macro_f1
 
 
 def predict(model, X, batch_size: int = 512) -> np.ndarray:

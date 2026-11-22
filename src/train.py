@@ -14,12 +14,8 @@ from .losses import CrossEntropyLoss, MSELoss
 from .model import build_mlp
 from .optim import SGD, Adam
 
-try:  # INTERFACES 约定在 src/ 下
-    from .data import iter_batches, load_mnist
-    from .metrics import accuracy, macro_f1
-except ImportError:  # 当前仓库把 B 的模块放在项目根目录
-    from data import iter_batches, load_mnist
-    from metrics import accuracy, macro_f1
+from .data import iter_batches, load_mnist
+from .metrics import accuracy, macro_f1
 
 
 def make_loss(name: str):
